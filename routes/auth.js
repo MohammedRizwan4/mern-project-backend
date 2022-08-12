@@ -84,7 +84,7 @@ router.post('/login', [
     res.json({ success, authToken });
 
   } catch (error) {
-    res.status(400).json({ success, error: "Internal server Error" });
+    res.status(400).json({ success, error: "Internal server Error",error });
   }
 })
 
