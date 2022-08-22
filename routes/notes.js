@@ -4,7 +4,6 @@ const Notes = require('../models/Notes');
 const fetchuser = require('../middleware/fetchuser');
 const { body, validationResult } = require('express-validator');
 
-
 // Route 1 Get all notes 
 router.get('/fetchallnotes', fetchuser, async (req, res) => {
     try {
@@ -13,7 +12,6 @@ router.get('/fetchallnotes', fetchuser, async (req, res) => {
     } catch (error) {
         res.status(400).json({ error: "Internal server Error" });
     }
-
 })
 
 // Route 2 Create notes using post
@@ -62,6 +60,7 @@ router.put('/updatenote/:id', fetchuser, async (req, res) => {
         if (!note) {
             return res.status(404).send("Not found");
         }
+        
         if (note.user.toString() !== req.user.id) {
             return res.status(401).send("Not allowed");
         }

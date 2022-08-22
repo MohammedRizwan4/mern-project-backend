@@ -26,11 +26,12 @@ router.post('/createuser', [
   }
 
   try {
-    let user = await User.findOne({ success, email: req.body.email })
+    let user = await User.findOne({ email: req.body.email })
     if (user) {
       return res.status(400).json({ success, errors: "Sorry a user with this email is already exists" })
     }
     const salt = await bcrypt.genSalt(10);
+
     secPass = await bcrypt.hash(req.body.password, salt);
     // check whether the user with the email already exists
     user = await User.create({
@@ -48,9 +49,11 @@ router.post('/createuser', [
     success = true;
     res.json({ success, authToken });
   } catch (error) {
-    res.status(400).json({ success, error: "Internal server Error" });
+    console.log(error);
+    res.status(400).json({ success, error: "Internal server Error" ,error});
   }
 })
+
 //Route 2
 // Authenticate a user using : POST "api/auth/login". Doesnt require auth
 router.post('/login', [
