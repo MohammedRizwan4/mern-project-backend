@@ -10,7 +10,11 @@ connectToMongo();
 
 //express server
 
-app.use(cors());
+app.use(cors({
+  origin: ["https://mern-project-frontend-alpha.vercel.app/"],
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  credentials: true
+}));
 app.use(express.json())
 
 app.use('/api/auth', require('./routes/auth'))
