@@ -13,7 +13,7 @@ const SECRET_KEY = 'Mynameismohammedrizwan'
 // no login required
 // Route 1
 router.post('/createuser', [
-  body('email','Please enter a valid email').isEmail(),
+  body('email', 'Please enter a valid email').isEmail(),
   body('name', 'Enter a valid name ').isLength({ min: 3 }),
   body('password', 'Password must be atleast 5 characters ').isLength({ min: 5 }),
 ], async (req, res) => {
@@ -34,11 +34,13 @@ router.post('/createuser', [
 
     secPass = await bcrypt.hash(req.body.password, salt);
     // check whether the user with the email already exists
-    user = await User.create({
+    user = await User({
       name: req.body.name,
       password: secPass,
       email: req.body.email
     })
+
+    await user.save()
 
     const data = {
       user: {
@@ -47,10 +49,10 @@ router.post('/createuser', [
     }
     authToken = jwt.sign(data, SECRET_KEY)
     success = true;
-    res.json({ success, authToken });
+    return res.json({ success, authToken });
   } catch (error) {
     console.log(error);
-    res.status(400).json({ success, error: "Internal server Error" ,error});
+    return res.status(400).json({ success, error: "Internal server Error", error });
   }
 })
 
@@ -70,11 +72,11 @@ router.post('/login', [
   try {
     const user = await User.findOne({ email: email });
     if (!user) {
-      res.status(400).json({ success, error: "Invalid Credentials" });
+      return res.status(400).json({ success, error: "Invalid Credentials" });
     }
     const passCompare = await bcrypt.compare(password, user.password);
     if (!passCompare) {
-      res.status(400).json({ success, error: "Invalid Credentials" });
+      return res.status(400).json({ success, error: "Invalid Credentials" });
     }
 
     const data = {
@@ -84,10 +86,10 @@ router.post('/login', [
     }
     success = true;
     authToken = jwt.sign(data, SECRET_KEY)
-    res.json({ success, authToken });
+    return res.json({ success, authToken });
 
   } catch (error) {
-    res.status(400).json({ success, error: "Internal server Error",error });
+    return res.status(400).json({ success, error: "Internal server Error", error });
   }
 })
 
@@ -97,9 +99,9 @@ router.post('/getuser', fetchuser, async (req, res) => {
   try {
     const userId = await req.user.id;
     const user = await User.findById(userId).select("-password");
-    res.send(user);
+    return res.send(user);
   } catch (error) {
-    res.status(400).send("Internal server Error");
+    return res.status(400).send("Internal server Error");
   }
 })
 module.exports = router;
